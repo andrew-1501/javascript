@@ -17,18 +17,19 @@
             border-radius: 10px;
             text-align: center;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #45a049;
-        }
+       button {
+    padding: 12px 24px;
+    font-size: 15px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+       button:hover {
+    background: #1d4ed8;
+}
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -103,11 +104,10 @@
             buttonsDiv.className = 'modal-buttons';
             
             const okBtn = document.createElement('button');
-            okBtn.textContent = 'OK';
-            okBtn.style.background = '#4CAF50';
-            
+            okBtn.textContent = 'ОК';
+
             const cancelBtn = document.createElement('button');
-            cancelBtn.textContent = 'ОТМЕНА';
+            cancelBtn.textContent = 'Отмена';
             
             buttonsDiv.appendChild(okBtn);
             buttonsDiv.appendChild(cancelBtn);
@@ -159,12 +159,12 @@
         }
 
         document.getElementById('showPromptBtn').addEventListener('click', () => {
-            showPrompt('Введите что-нибудь<br><strong>умное:</strong>', (value) => {
+            showPrompt('Введите текст', (value) => {
                 const resultDiv = document.getElementById('result');
                 if (value !== null) {
-                    resultDiv.innerHTML = `✅ Вы ввели: "${value}"`;
+                    resultDiv.innerHTML = ` Вы ввели: "${value}"`;
                 } else {
-                    resultDiv.innerHTML = `❌ Ввод отменён`;
+                    resultDiv.innerHTML = ` Ввод отменён`;
                 }
             });
         });
