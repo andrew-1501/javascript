@@ -136,4 +136,4 @@ function formatDate(date) {
     const year = String(date.getFullYear()).slice(-2);
     return `${day}.${month}.${year}`;
 }
-console.log(formatDate(new Date())
+console.log(formatDate(new Date()))
