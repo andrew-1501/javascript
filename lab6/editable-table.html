@@ -81,70 +81,121 @@
     </div>
 
     <script>
-        let editingCell = null;
-        let textarea = null;
-        let controlsDiv = null;
-        let originalContent = '';
+    let editingCell = null;
+    let textarea = null;
+    let controlsDiv = null;
+    let originalContent = '';
 
-        function cancelEdit() {
-            if (editingCell && textarea && controlsDiv) {
-                editingCell.innerHTML = originalContent;
-                editingCell.classList.remove('editing-cell');
-                editingCell = null;
-            }
-        }
+    function saveTable() {
+        const tableData = [];
+        const rows = document.querySelectorAll('#editableTable tr');
 
-        function saveEdit() {
-            if (editingCell && textarea && controlsDiv) {
-                editingCell.innerHTML = textarea.value;
-                editingCell.classList.remove('editing-cell');
-                editingCell = null;
-            }
-        }
-
-        function startEdit(cell) {
-            if (editingCell) return;
-            
-            editingCell = cell;
-            originalContent = cell.innerHTML;
-            
-            cell.classList.add('editing-cell');
-            cell.innerHTML = '';
-            
-            textarea = document.createElement('textarea');
-            textarea.value = originalContent;
-            textarea.rows = 3;
-            
-            controlsDiv = document.createElement('div');
-            controlsDiv.className = 'edit-controls';
-            
-            const okBtn = document.createElement('button');
-            okBtn.textContent = 'OK';
-            okBtn.style.background = '#4CAF50';
-            okBtn.style.color = 'white';
-            okBtn.onclick = () => saveEdit();
-            
-            const cancelBtn = document.createElement('button');
-            cancelBtn.textContent = 'Отмена';
-            cancelBtn.style.background = '#f44336';
-            cancelBtn.style.color = 'white';
-            cancelBtn.onclick = () => cancelEdit();
-            
-            controlsDiv.appendChild(okBtn);
-            controlsDiv.appendChild(cancelBtn);
-            
-            cell.appendChild(textarea);
-            cell.appendChild(controlsDiv);
-            textarea.focus();
-        }
-
-        const table = document.getElementById('editableTable');
-        table.addEventListener('click', function(e) {
-            const cell = e.target.closest('td');
-            if (!cell) return;
-            if (editingCell) return;
-            startEdit(cell);
+        rows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('td').forEach(cell => {
+                rowData.push(cell.textContent);
+            });
+            tableData.push(rowData);
         });
-    </script>
+
+        sessionStorage.setItem('tableData', JSON.stringify(tableData));
+    }
+
+    function loadTable() {
+        const savedData = sessionStorage.getItem('tableData');
+
+        if (!savedData) return;
+
+        const tableData = JSON.parse(savedData);
+        const rows = document.querySelectorAll('#editableTable tr');
+
+        rows.forEach((row, rowIndex) => {
+            const cells = row.querySelectorAll('td');
+
+            cells.forEach((cell, cellIndex) => {
+                if (
+                    tableData[rowIndex] &&
+                    tableData[rowIndex][cellIndex] !== undefined
+                ) {
+                    cell.textContent = tableData[rowIndex][cellIndex];
+                }
+            });
+        });
+    }
+
+    function cancelEdit() {
+        if (editingCell && textarea && controlsDiv) {
+            editingCell.innerHTML = originalContent;
+            editingCell.classList.remove('editing-cell');
+
+            editingCell = null;
+            textarea = null;
+            controlsDiv = null;
+        }
+    }
+
+    function saveEdit() {
+        if (editingCell && textarea && controlsDiv) {
+            editingCell.innerHTML = textarea.value;
+            editingCell.classList.remove('editing-cell');
+
+            saveTable();
+
+            editingCell = null;
+            textarea = null;
+            controlsDiv = null;
+        }
+    }
+
+    function startEdit(cell) {
+        if (editingCell) return;
+
+        editingCell = cell;
+        originalContent = cell.textContent;
+
+        cell.classList.add('editing-cell');
+        cell.innerHTML = '';
+
+        textarea = document.createElement('textarea');
+        textarea.value = originalContent;
+        textarea.rows = 3;
+
+        controlsDiv = document.createElement('div');
+        controlsDiv.className = 'edit-controls';
+
+        const okBtn = document.createElement('button');
+        okBtn.textContent = 'OK';
+        okBtn.style.background = '#4CAF50';
+        okBtn.style.color = 'white';
+        okBtn.onclick = saveEdit;
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = 'Отмена';
+        cancelBtn.style.background = '#f44336';
+        cancelBtn.style.color = 'white';
+        cancelBtn.onclick = cancelEdit;
+
+        controlsDiv.appendChild(okBtn);
+        controlsDiv.appendChild(cancelBtn);
+
+        cell.appendChild(textarea);
+        cell.appendChild(controlsDiv);
+
+        textarea.focus();
+    }
+
+    const table = document.getElementById('editableTable');
+
+    table.addEventListener('click', function(e) {
+        const cell = e.target.closest('td');
+
+        if (!cell) return;
+        if (editingCell) return;
+
+        startEdit(cell);
+    });
+
+    loadTable();
+</script>
 </body>
 </html>
